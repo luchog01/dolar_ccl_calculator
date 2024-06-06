@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+    <style>
+        body {
+            background-color: #fff;
+            color: #333;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .table {
+            background-color: #f9f9f9;
+            color: #333;
+            font-size: 22px;
+            /* increased font size */
+            width: 70%;
+            /* reduced width */
+            margin: 0 auto;
+            /* center align */
+        }
+
+        .table th,
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+            font-weight: bold;
+            /* making numbers slightly thicker */
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f2f2f2;
+        }
+
+        .green {
+            color: #24da4e;
+        }
+
+        .red {
+            color: #fa4254;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        // Reload the page every 60 seconds
+        setInterval(function () {
+            {
+                window.location.reload();
+            }
+        }, 30000);
+
+        // Initialize DataTables
+        $(document).ready(function () {
+            $('table').DataTable({
+                "pageLength": 25,
+                "order": [[1, "asc"]],
+                "columnDefs": [{
+                    "targets": [2, 3, 4], // Index of the Delta % 1m column (0-based index)
+                    "render": function (data, type, full, meta) {
+                        if (parseFloat(data) > 0) {
+                            return '<span class="green">' + data + ' %' + '</span>';
+                        } else if (parseFloat(data) < 0) {
+                            return '<span class="red">' + data + ' %' + '</span>';
+                        } else {
+                            return data;
+                        }
+                    }
+                }]
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">CCL Calculator - Update Time {{updated_time}}</h1>
+        {{ table_html | safe }}
+    </div>
+</body>
+
+</html>
