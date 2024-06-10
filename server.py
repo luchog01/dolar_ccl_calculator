@@ -7,17 +7,22 @@ import uvicorn
 from contextlib import asynccontextmanager
 import asyncio
 from datetime import datetime
+import traceback
 
 df = None
 updated_time: str = ""
 
 async def update_df():
-    global df
-    global updated_time
-    while True:
-        df = get_tickers_ccl_df(tickers)
-        updated_time = datetime.now().strftime("%H:%M:%S")
-        await asyncio.sleep(60)  # Wait for 60 seconds before updating again
+    try:
+        global df
+        global updated_time
+        while True:
+            df = get_tickers_ccl_df(tickers)
+            updated_time = datetime.now().strftime("%H:%M:%S")
+            await asyncio.sleep(60)  # Wait for 60 seconds before updating again
+    except Exception as e:
+        print("Error updating DataFrame")
+        print(traceback.format_exc())
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

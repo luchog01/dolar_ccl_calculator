@@ -2,6 +2,8 @@ import yfinance as yf
 import pandas as pd
 from settings import ratios
 from enum import Enum
+from datetime import datetime, timedelta
+from dateutil import tz
 
 class Period(Enum):
     LAST = "LAST"
@@ -27,8 +29,8 @@ def resolve_exceptions(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def get_ticker_adj_close_df(ticker: str) -> pd.DataFrame:
-    data=yf.download(ticker,interval="1m", period="1d", progress = False)
 
+    data=yf.download(ticker,interval="1m", period="5d", progress = False)
     data.index = data.index.tz_convert('America/Argentina/Buenos_Aires')
     data = data.filter(like='Adj Close')
 
@@ -42,7 +44,18 @@ def get_period_adj_close(df: pd.DataFrame, period: Period) -> float:
     elif period == Period.HOUR_AGO:
         return df['Adj Close'].iloc[-60]
     elif period == Period.DAY_AGO:
-        return df['Adj Close'].iloc[0]
+        today = datetime.now(tz=tz.gettz(df.index.tz.zone)).date()
+        unique_dates = sorted(df.index.date, reverse=True)
+        previous_date = None
+        
+        for date in unique_dates:
+            if date < today:
+                previous_date = date
+                break
+        
+        if previous_date:
+            first_row_previous_date = df[df.index.date == previous_date].iloc[0]
+            return first_row_previous_date['Adj Close']
     
 def get_tickers_ccl_at_period_df(all_df: dict[str, pd.DataFrame], period: Period) -> pd.DataFrame:
     data_usa = []
