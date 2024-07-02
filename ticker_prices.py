@@ -54,7 +54,7 @@ def get_period_adj_close(df: pd.DataFrame, period: Period) -> float:
                 break
         
         if previous_date:
-            first_row_previous_date = df[df.index.date == previous_date].iloc[0]
+            first_row_previous_date = df[df.index.date == previous_date].iloc[-1]
             return first_row_previous_date['Adj Close']
     
 def get_tickers_ccl_at_period_df(all_df: dict[str, pd.DataFrame], period: Period) -> pd.DataFrame:
